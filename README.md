@@ -1,2 +1,3 @@
 # book-store
-A Demo NodeJs Project 
+A Demo REST project using Node & Express JS
+
