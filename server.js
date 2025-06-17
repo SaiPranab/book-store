@@ -1,6 +1,8 @@
 const express = require('express')
-const bookRoutes = require("./routes/book-routes")
 require('dotenv').config()
+require('./config/dbConfig')
+
+const bookRoutes = require("./modules/book/bookRoutes")
 
 const app = express();
 const PORT = process.env.PORT || 1300;
