@@ -11,7 +11,6 @@ const fileRegex = /Routes\.js$/;
 
 fs.readdirSync(modulesPath, {withFileTypes: true}).forEach(dir => {
   // console.log('dir',dir);
-  
   if(dir.isDirectory()) {
     const modulesDir = path.join(modulesPath, dir.name);
 

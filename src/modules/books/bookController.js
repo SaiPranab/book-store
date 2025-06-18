@@ -10,6 +10,7 @@ const createBook = async (req, res) => {
     }
 
     const newBook = await bookService.createBook(title, author);
+    newBook.clientIp = req.clientIp;
     return commonResponse(res, StatusCodes.CREATED, true, newBook);
   } catch (error) {
     console.error(error);
@@ -19,8 +20,8 @@ const createBook = async (req, res) => {
 
 const getAllBooks = async (req, res) => {
   try {
+    debugger
     const books = await bookService.getAllBooks();
-    console.log('books', books);
     
     return commonResponse(res, StatusCodes.OK, true, books);
   } catch (error) {
