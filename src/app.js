@@ -14,6 +14,7 @@ app.use(express.json());
 // app.use('/api/books', bookRoutes);
 app.use('/api/v1', routeHandler)
 app.use('/get-env', (req, res) => res.send('Environment is ' + ENV))
+app.use('/test', (req, res) => { throw new Error("Some random error") })
 
 app.use(globalErrorHandler);
 
