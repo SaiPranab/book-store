@@ -3,13 +3,15 @@ const bookRoutes = require('./modules/books/bookRoutes');
 const routeHandler = require('./routes/routeHandler');
 const globalErrorHandler = require('./middleware/globalErrorHandler');
 const { ENV } = require('./config/config');
+const rateLimitter = require('./middleware/rateLimitter');
 // const ipLogger = require('./middleware/ipLogger');
 require('./config/dbConfig');
 
 const app = express();
 
+app.use(rateLimitter(100, 15 * 60 * 1000)) // -> time in miliseconds
+
 app.use(express.json());
-// app.use(ipLogger);
 
 // app.use('/api/books', bookRoutes);
 app.use('/api/v1', routeHandler)
