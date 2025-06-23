@@ -1,67 +1,62 @@
 const { StatusCodes } = require('http-status-codes');
 const commonResponse = require('../../common/commonResponse');
 const authService = require('./authService');
+const userRoles = require('./userRoles');
+const AppError = require('../../utils/errors/AppError');
 
 const registerUser = async (req, res) => {
-  try {
-    const { name, email, password } = req.body;
-    if (!name || !email || !password) {
-      return commonResponse(res, StatusCodes.BAD_REQUEST, false, null, 'Bad Request', 'name, email and password are required');
-    }
-
-    const newUser = await authService.register(name, email, password);
-    newUser.clientIp = req.clientIp;
-    return commonResponse(res, StatusCodes.CREATED, true, newUser);
-  } catch (err) {
-    return commonResponse(res, StatusCodes.INTERNAL_SERVER_ERROR, false, null, 'Register failed', err.message);
+  const { name, email, password } = req.body;
+  if (!name || !email || !password) {
+    throw new AppError('Bad Request', 'name, email and password are required', StatusCodes.BAD_REQUEST);
   }
+
+  const newUser = await authService.register(name, email, password, userRoles.USER);
+  return commonResponse(res, StatusCodes.CREATED, true, newUser);
 };
 
 const loginUser = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    if (!email || !password) {
-      return commonResponse(res, StatusCodes.BAD_REQUEST, false, null, 'Bad Request', 'email and password are required');
-    }
-
-    const tokens = await authService.login(email, password);
-    return commonResponse(res, StatusCodes.OK, true, tokens);
-  } catch (err) {
-    return commonResponse(res, StatusCodes.UNAUTHORIZED, false, null, 'Login failed', err.message);
+  const { email, password } = req.body;
+  if (!email || !password) {
+    throw new AppError('Bad Request', 'email and password are required', StatusCodes.BAD_REQUEST);
   }
+
+  const tokens = await authService.login(email, password);
+  return commonResponse(res, StatusCodes.OK, true, tokens);
 };
 
 const issueNewRefreshToken = async (req, res) => {
-  try {
-    const { refreshToken } = req.body;
-    if (!refreshToken) {
-      return commonResponse(res, StatusCodes.BAD_REQUEST, false, null, 'Bad Request', 'Refresh token is required');
-    }
-
-    const tokens = await authService.newRefreshToken(refreshToken);
-    return commonResponse(res, StatusCodes.OK, true, tokens);
-  } catch (err) {
-    return commonResponse(res, StatusCodes.UNAUTHORIZED, false, null, 'Token refresh failed', err.message);
+  const { refreshToken } = req.body;
+  if (!refreshToken) {
+    throw new AppError('Bad Request', 'Refresh token is required', StatusCodes.BAD_REQUEST);
   }
+
+  const tokens = await authService.newRefreshToken(refreshToken);
+  return commonResponse(res, StatusCodes.OK, true, tokens);
 };
 
 const logout = async (req, res) => {
-  try {
-    const { refreshToken } = req.body;
-    if (!refreshToken) {
-      return commonResponse(res, StatusCodes.BAD_REQUEST, false, null, 'Bad Request', 'Refresh token is required');
-    }
-
-    await authService.logout(refreshToken);
-    return commonResponse(res, StatusCodes.OK, true, 'Logged out successfully');
-  } catch (err) {
-    return commonResponse(res, StatusCodes.INTERNAL_SERVER_ERROR, false, null, 'Logout failed', err.message);
+  const { refreshToken } = req.body;
+  if (!refreshToken) {
+    throw new AppError('Bad Request', 'Refresh token is required', StatusCodes.BAD_REQUEST);
   }
+
+  await authService.logout(refreshToken);
+  return commonResponse(res, StatusCodes.OK, true, 'Logged out successfully');
 };
+
+const registerAuthor = async (req, res) => {
+  const { authorName, email, password } = req.body;
+  if (!authorName || !email || !password)
+    throw new AppError('Bad Request', 'authorName or email or password is required', StatusCodes.BAD_REQUEST);
+
+  const newUser = await authService.register(authorName, email, password, userRoles.AUTHOR)
+  return commonResponse(res, StatusCodes.CREATED, true, newUser);
+}
 
 module.exports = {
   registerUser,
   loginUser,
   issueNewRefreshToken,
-  logout
+  logout,
+  registerAuthor
 };
