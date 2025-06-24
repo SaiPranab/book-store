@@ -61,23 +61,6 @@ const invalidateSession = async (sessionId) => {
   `, [sessionId]);
 };
 
-// This can be deleted if you're no longer updating refresh tokens directly
-const updateSessionRefreshToken = async (sessionId, newRefreshToken, newExpiresAt) => {
-  await db.execute(`
-    UPDATE sessions 
-    SET session_token = ?, expires_at = ?, updated_at = CURRENT_TIMESTAMP 
-    WHERE session_id = ?
-  `, [newRefreshToken, newExpiresAt, sessionId]);
-};
-
-// Optional: keep track of revoked tokens if you're doing additional security
-const revokeAccessToken = async (token, userId, reason = null) => {
-  const id = crypto.randomUUID();
-  await db.execute(`
-    INSERT INTO revoked_tokens (id, token, user_id, reason)
-    VALUES (?, ?, ?, ?)
-  `, [id, token, userId, reason]);
-};
 
 module.exports = {
   findUserById,
@@ -87,6 +70,4 @@ module.exports = {
   createSession,
   findSessionById,
   invalidateSession,
-  updateSessionRefreshToken,
-  revokeAccessToken
 };

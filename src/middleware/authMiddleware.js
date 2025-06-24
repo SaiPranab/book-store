@@ -25,8 +25,9 @@ const authMiddleware = async (req, res, next) => {
   const session = await authRepo.findSessionById(sessionId);
   // console.log('sessin expirationtime', session.expires_at, session.expires_at / 1000, Date.now()/ 1000);
   
+  const sessionExpirationTime = session.expires_at / 1000;
   if (!session || !session.is_active || session.token_type !== 'access_token' || 
-                                                        session.session_token !== accessToken || exp > session.expires_at / 1000) {
+                                                        session.session_token !== accessToken || exp > sessionExpirationTime) {
     throw new AppError("Unauthorized Access", "Access token is invalid or expired", StatusCodes.UNAUTHORIZED);
   }
 

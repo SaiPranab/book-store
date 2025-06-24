@@ -1,7 +1,13 @@
 function parseTimeToMs(timeStr) {
-  const match = timeStr.match(/^(\d+)([smhd])$/); // e.g., 15m, 1d
-  if (!match) throw new Error(`Invalid time format: ${timeStr}`);
+  if (typeof timeStr !== 'string') {
+    throw new Error('Time must be a string like "15m", "1d", etc.');
+  }
 
+  const match = timeStr.match(/^(\d+)([smhd])$/); // e.g., 15m, 1d
+  if (!match) {
+    throw new Error(`Invalid time format: ${timeStr}`);
+  }
+  
   const value = parseInt(match[1], 10);
   const unit = match[2];
 

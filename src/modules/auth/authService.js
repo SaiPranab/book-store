@@ -4,7 +4,7 @@ const {JWT_SECRET, JWT_REFRESH_SECRET, ACCESS_TOKEN_EXPIRY, REFRESH_TOKEN_EXPIRY
 const { verifyToken, createToken } = require('../../utils/jwt/jwtUtils');
 const AppError = require('../../utils/errors/AppError');
 const { StatusCodes } = require('http-status-codes');
-const { getExpiryTime } = require('../../utils/timeUtils');
+const { getExpiryTime } = require('../../utils/time/timeUtils');
 
 const register = async (name, email, password, role) => {
   const existingUser = await authRepo.findUserByEmail(email);
@@ -117,9 +117,9 @@ const verifySession = async (sessionId, refreshToken) => {
     throw new AppError('Token Error', 'Refresh token is invalid or expired', StatusCodes.UNAUTHORIZED);
   }
 
-  const isMatch = bcrypt.compare(refreshToken, session.session_token)
+  const isMatch = await bcrypt.compare(refreshToken, session.session_token)
   if (!isMatch) {
-    await authRepo.invalidateSession(sessionId);
+    await invalidateSessions(session);
     throw new AppError('Refresh Token Reuse Error', 'Refresh token reuse detected. Session revoked', StatusCodes.UNAUTHORIZED);
   }
 

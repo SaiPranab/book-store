@@ -6,9 +6,9 @@ const authorizeRoles = require('../../middleware/authorizeRoles');
 
 const router = express.Router();
 
-router.post("/", ipLogger('some random value'), authMiddleware, authorizeRoles,createBook)
 router.get("/", getAllBooks)
 router.get("/:id", getBookById)
+router.post("/", ipLogger('some random value'), authMiddleware, authorizeRoles, createBook)
 router.put("/:id", authMiddleware, authorizeRoles, updateBookById)
 router.delete("/:id", authMiddleware, authorizeRoles, deleteBook)
 
