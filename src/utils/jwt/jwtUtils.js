@@ -12,7 +12,8 @@ const verifyToken = (token, secret) => {
   try {
     payload = jwt.verify(token, secret);
   } catch (err) {
-    throw new AppError( 'Token Error', 'Refresh token expired or malformed', StatusCodes.UNAUTHORIZED);
+    
+    throw new AppError( 'Token Error', 'Token expired or malformed', StatusCodes.UNAUTHORIZED);
   }
 
   return payload
