@@ -2,7 +2,8 @@ const { StatusCodes } = require("http-status-codes");
 const { JWT_SECRET } = require("../config/config");
 const { verifyToken } = require("../utils/jwt/jwtUtils");
 const AppError = require("../utils/errors/AppError");
-const authRepo = require('../modules/auth/authRepository')
+const authRepo = require('../modules/auth/authRepository');
+const { ErrorTitles, ErrorMessages } = require("../utils/errors/errorMessages");
 
 const authMiddleware = async (req, res, next) => {
   const authHeader = req.headers.authorization;
@@ -19,7 +20,7 @@ const authMiddleware = async (req, res, next) => {
   
 
   if(!userId || !role || !sessionId) {
-    throw new AppError("Bad Request", "Invalid token payload: missing userId or role or sessionId", StatusCodes.UNAUTHORIZED)
+    throw new AppError(ErrorTitles.BAD_REQUEST, ErrorMessages.MISSING_FIELDS, StatusCodes.UNAUTHORIZED)
   }
 
   const session = await authRepo.findSessionById(sessionId);
@@ -28,7 +29,7 @@ const authMiddleware = async (req, res, next) => {
   const sessionExpirationTime = session.expires_at / 1000;
   if (!session || !session.is_active || session.token_type !== 'access_token' || 
                                                         session.session_token !== accessToken || exp > sessionExpirationTime) {
-    throw new AppError("Unauthorized Access", "Access token is invalid or expired", StatusCodes.UNAUTHORIZED);
+    throw new AppError(ErrorTitles.UNAUTHORIZED, ErrorMessages.TOKEN_EXPIRED_OR_INVALID, StatusCodes.UNAUTHORIZED);
   }
 
   req.userId = userId;

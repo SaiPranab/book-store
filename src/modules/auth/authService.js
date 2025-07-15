@@ -5,11 +5,12 @@ const { verifyToken, createToken } = require('../../utils/jwt/jwtUtils');
 const AppError = require('../../utils/errors/AppError');
 const { StatusCodes } = require('http-status-codes');
 const { getExpiryTime } = require('../../utils/time/timeUtils');
+const { ErrorTitles, ErrorMessages } = require('../../utils/errors/errorMessages');
 
 const register = async (name, email, password, role) => {
   const existingUser = await authRepo.findUserByEmail(email);
   if (existingUser){
-    throw new AppError('Registration Error', 'User already exists with this email', StatusCodes.CONFLICT);
+    throw new AppError(ErrorTitles.REGISTRATION_ERROR, ErrorMessages.USER_ALREADY_EXISTS, StatusCodes.CONFLICT);
   } 
 
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -20,12 +21,12 @@ const register = async (name, email, password, role) => {
 const login = async (email, password) => {  
   const user = await authRepo.findUserByEmail(email);
   if (!user || !user.active){
-    throw new AppError('Login Error', 'Invalid email or account is inactive', StatusCodes.UNAUTHORIZED);
+    throw new AppError(ErrorTitles.LOGIN_ERROR, ErrorMessages.INVALID_EMAIL_OR_PASSWORD, StatusCodes.UNAUTHORIZED);
   } 
 
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) {
-    throw new AppError('Login Error', 'Incorrect password', StatusCodes.UNAUTHORIZED);
+    throw new AppError(ErrorTitles.LOGIN_ERROR, ErrorMessages.INVALID_EMAIL_OR_PASSWORD, StatusCodes.UNAUTHORIZED);
   }
 
   return await generateAndStoreTokens(user.id, user.role)
@@ -40,7 +41,7 @@ const newRefreshToken = async (refreshToken) => {
 
   const user = await authRepo.findUserById(userId);
   if (!user || !user.active) {
-    throw new AppError('Token Error', 'User not found or inactive', StatusCodes.UNAUTHORIZED);
+    throw new AppError(ErrorTitles.TOKEN_ERROR, ErrorMessages.USER_NOT_FOUND, StatusCodes.UNAUTHORIZED);
   }
 
   // invalidate previous sessions
@@ -59,7 +60,7 @@ const logout = async (refreshToken) => {
 
   const session = await authRepo.findSessionById(sessionId);
   if (!session || session.token_type !== 'refresh_token') {
-    throw new AppError('Logout Error', 'Invalid refresh token', StatusCodes.UNAUTHORIZED);
+    throw new AppError(ErrorTitles.LOGOUT_ERROR, 'Invalid refresh token', StatusCodes.UNAUTHORIZED);
   }
 
   await invalidateSessions(session);  

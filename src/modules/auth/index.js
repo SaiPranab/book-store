@@ -1,7 +1,7 @@
 const authRoutes = require('./authRoutes');
 const authController = require('./authController');
-const authService = require('./authauthService');
-const authRepository = require('./authauthRepository');
+const authService = require('./authService');
+const authRepository = require('./authRepository');
 const userRoles = require('./userRoles');
 
 module.exports = {

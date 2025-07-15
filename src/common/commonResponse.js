@@ -18,18 +18,17 @@
 // }
 
 const commonResponse = (res, status, success, data, title, details) => {
-  const responseBody = { 
+  const response = { 
     data,
-    success
+    success,
+    timeStamp : new Date().toLocaleString('sv-SE', { timeZone: 'Asia/Kolkata'})
   }
 
   if(!success) {
-    responseBody.title = title;
-    responseBody.details = details;
+    response.title = title;
+    response.details = details;
   }
 
-  responseBody.timeStamp = new Date().toLocaleString('sv-SE', { timeZone: 'Asia/Kolkata'});
-
-  return res.status(status).json(responseBody);
+  return res.status(status).json(response);
 }
 module.exports = commonResponse;
